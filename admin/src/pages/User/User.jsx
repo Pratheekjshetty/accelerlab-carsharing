@@ -2,15 +2,16 @@ import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaTrash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import Confirmation from  '../../components/Confirmation/Confirmation';
+import Confirmation from '../../components/Confirmation/Confirmation';
 
 const UserPage = ({ url }) => {
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+  // Fetch users
   const fetchUsers = useCallback(async () => {
     try {
       const response = await axios.get(`${url}/api/user/list-users/user`);
@@ -21,79 +22,121 @@ const UserPage = ({ url }) => {
       }
     } catch (err) {
       toast.error('An error occurred while fetching users');
-      console.error(err);
     }
   }, [url]);
 
+  // Deactivate user
   const deactivateUser = async () => {
     try {
       const response = await axios.put(`${url}/api/user/deactivate/${selectedUser}`);
       if (response.data.success) {
         toast.success('User deactivated successfully');
-        fetchUsers(); // Refresh the user list after deactivation
+        await fetchUsers();
         setShowModal(false);
       } else {
         toast.error('Failed to deactivate user');
       }
     } catch (err) {
       toast.error('An error occurred while deactivating the user');
-      console.error(err);
     }
   };
 
+  // Fetch users when page loads
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
+  // Delete / deactivate button
   const handleDeleteClick = (userId) => {
     setSelectedUser(userId);
     setShowModal(true);
   };
 
+  // Pagination calculations
   const totalPages = Math.ceil(users.length / itemsPerPage);
   const startIdx = (currentPage - 1) * itemsPerPage;
   const endIdx = startIdx + itemsPerPage;
   const currentItems = users.slice(startIdx, endIdx);
 
+  // Change page
   const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
   };
 
-  const maxVisiblePages = 5;
-  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+  // Reset page if current page becomes invalid
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
-  if (endPage - startPage < maxVisiblePages - 1) {
-    startPage = Math.max(1, endPage - maxVisiblePages + 1);
-  }
   return (
-    <div className="mx-20 my-12">
-      <h2 className="text-2xl font-bold">Users Page</h2>
-      <div className="flex flex-col gap-5 mt-7">
-        {currentItems.map((user, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-[1fr_1fr] items-center gap-5 text-sm p-2.5 px-5 text-gray-500 border border-blue-500 sm:grid-cols-[1fr_1fr_1fr]  md:grid-cols-[1fr_1fr_1fr_1fr] md-gap-4 lg:grid-cols-[1fr_1fr_1fr_1fr_0.5fr]">
-            <img className="w-16" src={`${url}/${user.image}`} alt="User Icon" />
-            <p className="mt-2 mb-1">{user.name}</p>
-            <p>{user.email}</p>
-            <p>{user.phone}</p>
-            <p className="cursor-pointer" onClick={() => handleDeleteClick(user._id)}>
-              <FaTrash />
-            </p>
+    <div className="w-[85%] ml-10 mt-6 mr-2 text-[#6d6d6d] text-base">
+      {/* Users Page Header */}
+      <div className="flex justify-between items-center mb-7 bg-blue-100 p-3 rounded">
+        <h2 className="text-2xl font-bold text-black">
+          Users Page
+        </h2>
+      </div>
+      {/* Users Table */}
+      <div className="list add flex-col">
+        <div className="list-table">
+          {/* Column Titles */}
+          <div style={{ gridTemplateColumns: '0.5fr 2fr 2fr 1.5fr 0.5fr'}} className="grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm bg-[#f9f9f9]">
+            <b>Profile</b>
+            <b>Name</b>
+            <b>Email</b>
+            <b>Contact Number</b>
+            <b>Action</b>
           </div>
-        ))}
+          {/* User Data */}
+          {currentItems.map((user, index) => (
+            <div key={user._id || index}
+              style={{
+                gridTemplateColumns: '0.5fr 2fr 2fr 1.5fr 0.5fr'
+              }}className="grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm">
+              {/* Profile */}
+              <img className="w-[50px] h-[50px] object-cover rounded-full" src={`${url}/${user.image}`} alt="User Profile"/>
+              {/* Name */}
+              <p>{user.name}</p>
+              {/* Email */}
+              <p>{user.email}</p>
+              {/* Contact Number */}
+              <p>{user.phone}</p>
+              {/* Action */}
+              <p onClick={() => handleDeleteClick(user._id)}className="cursor-pointer"><FaTrash /></p>
+            </div>
+          ))}
+        </div>
+        {/* No Users */}
+        {users.length === 0 && (
+          <div className="text-center py-10 text-gray-500">
+            No users found.
+          </div>
+        )}
+        {/* Pagination */}
+        {users.length > itemsPerPage && (
+          <div className="flex justify-center items-center gap-4 mt-5">
+            {/* Previous Button */}
+            <button
+              className="px-5 py-2 bg-blue-500 text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}>Prev</button>
+            {/* Page Number */}
+            <span className="text-sm font-medium text-black">
+              Page {currentPage} of {totalPages}
+            </span>
+            {/* Next Button */}
+            <button
+              className="px-5 py-2 bg-blue-500 text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}>Next</button>
+          </div>
+        )}
       </div>
-      <div className="flex justify-center mt-5">
-        {Array.from({ length: endPage - startPage + 1}, (_, index) => (
-          <button
-            key={index + startPage}
-            className={`page-button ${currentPage === index + startPage? 'active' : ''}`}
-            onClick={() => handlePageChange(index + startPage)}>
-            {index + startPage}
-          </button>
-        ))}
-      </div>
+      {/* Confirmation Modal */}
       <Confirmation
         show={showModal}
         message="Are you sure you want to deactivate this user?"
