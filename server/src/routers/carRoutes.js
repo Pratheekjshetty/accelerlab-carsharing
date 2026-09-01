@@ -5,7 +5,6 @@ import multer from 'multer'
 const carRouter = express.Router();
 
 //Image Storage Engine
-
 const storage = multer.diskStorage({
     destination:"uploads",
     filename:(req,file,cb)=>{
@@ -14,7 +13,6 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({storage:storage})
-
 carRouter.post('/add',upload.single("image"),addCar)
 carRouter.get('/list',listCar)
 carRouter.get('/listactive-car',listActiveCars)

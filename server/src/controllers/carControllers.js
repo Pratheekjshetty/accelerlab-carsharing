@@ -1,6 +1,7 @@
 import carModel from '../models/carModels.js'
 import cron from 'node-cron';
 import fs from 'fs'
+
 //add car
 const addCar = async(req,res)=>{
     let image_filename = `${req.file.filename}`;
@@ -23,17 +24,18 @@ const addCar = async(req,res)=>{
         res.json({success:false,message:"Error"})
     }
 }
+
 //list all car
 const listCar =async(req,res)=>{
     try{
         const cars=await carModel.find({});
         res.json({success:true,data:cars})
-    }
-    catch(err){
+    }catch(err){
         console.log(err)
         res.json({success:false,message:"Error"})
     }
 }
+
 // list active cars
 const listActiveCars = async (req, res) => {
     try {
@@ -44,6 +46,7 @@ const listActiveCars = async (req, res) => {
         res.json({success:false,message:"Error"});
     }
 };
+
 //remove car
 const removeCar=async(req,res)=>{
     try{
@@ -51,12 +54,12 @@ const removeCar=async(req,res)=>{
         fs.unlink(`uploads/${car.image}`,()=>{})
         await carModel.findByIdAndDelete(req.body.id);
         res.json({success:true,message:"Car Removed"})
-    }
-    catch(err){
+    }catch(err){
         console.log(err)
         res.json({success:false,message:"Error"})
     }
 }
+
 //deactivate car
 const deactivateCar = async (req, res) => {
     try {
@@ -72,6 +75,7 @@ const deactivateCar = async (req, res) => {
         res.json({ success: false, message: "Error" });
     }
 };
+
 //edit car
 const editCar = async (req, res) => {
     try {
@@ -80,13 +84,11 @@ const editCar = async (req, res) => {
         if (!carId) {
             return res.json({ success: false, message: "Car ID not provided" });
         }
-
         console.log("Car ID:", carId);
         const car = await carModel.findById(carId);
         if (!car) {
             return res.json({ success: false, message: "Car not found" });
         }
-
         // If a new image is uploaded, replace the old one
         if (req.file) {
             console.log("Replacing image:", car.image);
@@ -109,6 +111,8 @@ const editCar = async (req, res) => {
         res.json({ success: false, message: "Error" });
     }
 };
+
+//get total cars
 const getTotalCars = async (req, res) => {
     try {
         const count = await carModel.countDocuments({});
@@ -118,4 +122,5 @@ const getTotalCars = async (req, res) => {
         res.json({ success: false, message: "Error" });
     }
 };
+
 export {addCar,listCar,listActiveCars,removeCar,deactivateCar,editCar,getTotalCars}

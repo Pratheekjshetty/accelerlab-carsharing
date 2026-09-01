@@ -117,6 +117,7 @@ const List = ({ url }) => {
     setData(data => ({ ...data, [name]: value }));
   };
 
+  // Update car details
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     const formData = new FormData();
@@ -232,20 +233,25 @@ const List = ({ url }) => {
           Add New
         </button>
       </div>
+
       {/* Car List Table */}
       <div className='list add flex-col'>
         <div className="list-table">
           {/* Column Titles */}
-          <div style={{ gridTemplateColumns: '0.5fr 2fr 1fr 1fr 1fr 1fr' }} className="title grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm bg-[#f9f9f9]">
+          <div style={{ gridTemplateColumns: '0.5fr 2fr 1fr 1fr 1fr 1fr' }} className="title grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm bg-[#123B66] text-white">
             <b>Image</b>
             <b>Name</b>
             <b>Category</b>
             <b>Location</b>
             <b>Price</b>
-            <b>Action</b>
+            <b colSpan="2">Action</b>
           </div>
           {/* Cars Data */}
-          {currentItems.map((item, index) => (
+          {list.length === 0 ? (
+            <div className="text-center py-10 text-gray-500 border border-zinc-300 bg-[#DCEEFF] text-[#123B66] font-medium">
+                No cars found.
+            </div>
+          ) : (currentItems.map((item, index) => (
             <div key={index} className="list-table-format grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm">
               {/* Image */}
               <img className='w-[50px]' src={`${url}/images/` + item.image} alt="" />
@@ -260,7 +266,7 @@ const List = ({ url }) => {
               <p onClick={() => handleDeleteClick(item._id)} className='cursor-pointer'><FaTrash /></p>
               <p onClick={() => editCar(item)} className='cursor-pointer'><FaEdit /></p>
             </div>
-          ))}
+          )))}
         </div>
         {/* Pagination */}
         {list.length > itemsPerPage && (
@@ -282,6 +288,8 @@ const List = ({ url }) => {
           </div>
         )}
       </div>
+
+      {/* Edit User Modal */}
       {isEditMode && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           onClick={handleCancel}>
@@ -289,9 +297,7 @@ const List = ({ url }) => {
             onClick={(e) => e.stopPropagation()}>
             {/* Heading */}
             <div className="relative bg-blue-100 p-3 rounded mb-6">
-              <h3 className="text-2xl font-bold text-black">
-                Edit Car
-              </h3>
+              <h3 className="text-2xl font-bold text-black">Edit Car</h3>
               {/* Close Button */}
               <button type="button"
                 onClick={handleCancel}
@@ -300,13 +306,10 @@ const List = ({ url }) => {
               </button>
             </div>
             {/* Edit Car Form */}
-            <form className="flex flex-col gap-5"
-              onSubmit={onSubmitHandler}>
+            <form className="flex flex-col gap-5" onSubmit={onSubmitHandler}>
               {/* Upload Image */}
               <div className="flex flex-col gap-2">
-                <p className="text-sm font-medium text-gray-700">
-                  Upload Image
-                </p>
+                <p className="text-sm font-medium text-gray-700">Upload Image</p>
                 <label htmlFor="image" className="cursor-pointer w-fit">
                   <img
                     className="w-32 h-24 object-contain border border-dashed border-gray-300"
@@ -321,9 +324,7 @@ const List = ({ url }) => {
               </div>
               {/* Car Name */}
               <div className="flex flex-col gap-2 w-full">
-                <p className="text-sm font-medium text-gray-700">
-                  Car name
-                </p>
+                <p className="text-sm font-medium text-gray-700">Car name</p>
                 <input
                   className="p-3 border border-gray-400 rounded-sm text-sm w-full outline-none focus:border-black"
                   onChange={onChangeHandler}
@@ -335,9 +336,7 @@ const List = ({ url }) => {
               </div>
               {/* Description */}
               <div className="flex flex-col gap-2 w-full">
-                <p className="text-sm font-medium text-gray-700">
-                  Car description
-                </p>
+                <p className="text-sm font-medium text-gray-700">Car description</p>
                 <textarea
                   className="p-3 border border-gray-400 rounded-sm text-sm w-full outline-none focus:border-black resize-none"
                   onChange={onChangeHandler}
@@ -352,9 +351,7 @@ const List = ({ url }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
                 {/* Color */}
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium text-gray-700">
-                    Color
-                  </p>
+                  <p className="text-sm font-medium text-gray-700">Color</p>
                   <input
                     className="p-3 border border-gray-400 rounded-sm text-sm w-full outline-none focus:border-black"
                     onChange={onChangeHandler}
@@ -366,9 +363,7 @@ const List = ({ url }) => {
                 </div>
                 {/* Category */}
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium text-gray-700">
-                    Car category
-                  </p>
+                  <p className="text-sm font-medium text-gray-700">Car category</p>
                   <select
                     className="p-3 border border-gray-400 rounded-sm text-sm w-full outline-none focus:border-black bg-white"
                     onChange={onChangeHandler}
@@ -386,14 +381,12 @@ const List = ({ url }) => {
               </div>
               {/* Price */}
               <div className="flex flex-col gap-2 w-full">
-                <p className="text-sm font-medium text-gray-700">
-                  Car price
-                </p>
+                <p className="text-sm font-medium text-gray-700">Car price</p>
                 <input
                   className="p-3 border border-gray-400 rounded-sm text-sm w-full outline-none focus:border-black"
                   onChange={onChangeHandler}
                   value={data.price}
-                  type="number"
+                  type="tel"
                   name="price"
                   placeholder="Rs.200"
                   required/>
@@ -402,23 +395,19 @@ const List = ({ url }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
                 {/* Seats */}
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium text-gray-700">
-                    Seats
-                  </p>
+                  <p className="text-sm font-medium text-gray-700">Seats</p>
                   <input
                     className="p-3 border border-gray-400 rounded-sm text-sm w-full outline-none focus:border-black"
                     onChange={onChangeHandler}
                     value={data.seats}
-                    type="number"
+                    type="tel"
                     name="seats"
                     placeholder="4"
                     required/>
                 </div>
                 {/* Location */}
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium text-gray-700">
-                    Car location
-                  </p>
+                  <p className="text-sm font-medium text-gray-700">Car location</p>
                   <select
                     className="p-3 border border-gray-400 rounded-sm text-sm w-full outline-none focus:border-black bg-white"
                     onChange={onChangeHandler}
@@ -433,9 +422,7 @@ const List = ({ url }) => {
               </div>
               {/* Model */}
               <div className="flex flex-col gap-2 w-full">
-                <p className="text-sm font-medium text-gray-700">
-                  Model
-                </p>
+                <p className="text-sm font-medium text-gray-700">Model</p>
                 <input
                   className="p-3 border border-gray-400 rounded-sm text-sm w-full outline-none focus:border-black"
                   onChange={onChangeHandler}
@@ -463,6 +450,8 @@ const List = ({ url }) => {
           </div>
         </div>
       )}
+
+      {/* Add User Modal */}
       {isAddMode && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           onClick={() => setIsAddMode(false)}>
@@ -470,9 +459,7 @@ const List = ({ url }) => {
             onClick={(e) => e.stopPropagation()}>
             {/* Heading */}
             <div className="relative bg-blue-100 p-3 rounded mb-6">
-              <h3 className="text-2xl font-bold text-black">
-                Add New Car
-              </h3>
+              <h3 className="text-2xl font-bold text-black">Add New Car</h3>
               {/* Close Button */}
               <button type="button"
                 onClick={() => setIsAddMode(false)}
@@ -481,13 +468,10 @@ const List = ({ url }) => {
               </button>
             </div>
             {/* Add Car Form */}
-            <form className="flex flex-col gap-5"
-              onSubmit={handleAddCar}>
+            <form className="flex flex-col gap-5" onSubmit={handleAddCar}>
               {/* Upload Image */}
               <div className="flex flex-col gap-2">
-                <p className="text-sm font-medium text-gray-700">
-                  Upload Image
-                </p>
+                <p className="text-sm font-medium text-gray-700">Upload Image</p>
                 <label htmlFor="addImage" className="cursor-pointer w-fit">
                   <img
                     className="w-32 h-24 object-contain border border-dashed border-gray-300"
@@ -507,9 +491,7 @@ const List = ({ url }) => {
               </div>
               {/* Car Name */}
               <div className="flex flex-col gap-2 w-full">
-                <p className="text-sm font-medium text-gray-700">
-                  Car name
-                </p>
+                <p className="text-sm font-medium text-gray-700">Car name</p>
                 <input
                   className="p-3 border border-gray-400 rounded-sm text-sm w-full outline-none focus:border-black"
                   onChange={(e) =>
@@ -525,9 +507,7 @@ const List = ({ url }) => {
               </div>
               {/* Description */}
               <div className="flex flex-col gap-2 w-full">
-                <p className="text-sm font-medium text-gray-700">
-                  Car description
-                </p>
+                <p className="text-sm font-medium text-gray-700">Car description</p>
                 <textarea
                   className="p-3 border border-gray-400 rounded-sm text-sm w-full outline-none focus:border-black resize-none"
                   onChange={(e) =>
@@ -545,9 +525,7 @@ const List = ({ url }) => {
               {/* Color + Category */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium text-gray-700">
-                    Color
-                  </p>
+                  <p className="text-sm font-medium text-gray-700">Color</p>
                   <input
                     className="p-3 border border-gray-400 rounded-sm text-sm w-full"
                     onChange={(e) =>
@@ -562,9 +540,7 @@ const List = ({ url }) => {
                     required/>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium text-gray-700">
-                    Car category
-                  </p>
+                  <p className="text-sm font-medium text-gray-700">Car category</p>
                   <select
                     className="p-3 border border-gray-400 rounded-sm text-sm w-full bg-white"
                     onChange={(e) =>
@@ -586,9 +562,7 @@ const List = ({ url }) => {
               </div>
               {/* Price */}
               <div className="flex flex-col gap-2 w-full">
-                <p className="text-sm font-medium text-gray-700">
-                  Car price
-                </p>
+                <p className="text-sm font-medium text-gray-700">Car price</p>
                 <input
                   className="p-3 border border-gray-400 rounded-sm text-sm w-full"
                   onChange={(e) =>
@@ -598,16 +572,14 @@ const List = ({ url }) => {
                     })
                   }
                   value={addData.price}
-                  type="number"
+                  type="tel"
                   placeholder="Rs.200"
                   required/>
               </div>
               {/* Seats + Location */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium text-gray-700">
-                    Seats
-                  </p>
+                  <p className="text-sm font-medium text-gray-700">Seats</p>
                   <input
                     className="p-3 border border-gray-400 rounded-sm text-sm w-full"
                     onChange={(e) =>
@@ -617,14 +589,12 @@ const List = ({ url }) => {
                       })
                     }
                     value={addData.seats}
-                    type="number"
+                    type="tel"
                     placeholder="4"
                     required/>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium text-gray-700">
-                    Car location
-                  </p>
+                  <p className="text-sm font-medium text-gray-700">Car location</p>
                   <select
                     className="p-3 border border-gray-400 rounded-sm text-sm w-full bg-white"
                     onChange={(e) =>
@@ -643,9 +613,7 @@ const List = ({ url }) => {
               </div>
               {/* Model */}
               <div className="flex flex-col gap-2 w-full">
-                <p className="text-sm font-medium text-gray-700">
-                  Model
-                </p>
+                <p className="text-sm font-medium text-gray-700">Model</p>
                 <input
                   className="p-3 border border-gray-400 rounded-sm text-sm w-full"
                   onChange={(e) =>
