@@ -77,63 +77,135 @@ const Apply = ({ url }) => {
     setAction(null);
   };
 
-  const groupApplicationsByDate = (applications) => {
-    return applications.reduce((groups, application) => {
-      const date = new Date(application.date).toISOString().split('T')[0]; // Extract date part
-      if (!groups[date]) {
-        groups[date] = [];
-      }
-      groups[date].push(application);
-      return groups;
-    }, {});
-  };
-
-  const groupedApplications = groupApplicationsByDate(currentItems);
-
   return (
-    <div className="mx-20 my-12">
-      <h2 className="text-2xl font-bold">Driver Applications</h2>
-      <div className='flex flex-col gap-5 mt-7'>
-      {Object.entries(groupedApplications).map(([date, applications]) => (
-        <div key={date}>
-        <h3 className='text-xl font-semibold'>{formatDate(date)}</h3>
-        {applications.map((application) => {
-          const status = statuses[application.userId];
-          return (
-            <div key={application._id} className='grid grid-cols-[1fr_2fr_2fr] items-center gap-5 text-sm p-2.5 px-5 text-gray-500 border border-blue-500 md:grid-cols-[1fr_2fr_2fr_1fr] md-gap-4 lg:grid-cols-[1fr_2fr_2fr_1fr_1fr] xl:grid-cols-[1fr_2fr_2fr_1fr_1fr_1fr_1fr]'>
-              <img className='w-12' src={apply_icon} alt="" />
-              <div>
-                <p className='mt-2 mb-1'>{application.address.firstName} {application.address.lastName}</p>
-                <p>{application.address.email}</p>
-                <p>{application.address.phone}</p>
-              </div>
-              <div>
-                <p className='mt-2 mb-1'>{application.licencenumber}</p>
-                <p>{formatDate(application.expiredate)}</p>
-                <p>{application.preferredLocation + ", " + application.experience + " years"}</p>
-              </div>
-              <p>{application.availability}</p>
-              <p>{application.preferredLocation}</p>
-              <button className={`p-2 outline-none ${status === 'Driver Confirmed' ? 'bg-green-200 border border-green-500' : 'bg-blue-200 border border-blue-500'} transform transition-transform duration-300 hover:scale-105`}
-                onClick={() => handleActionClick(application, 'Driver Confirmed')}>Accept</button>
-              <button className={`p-2 outline-none ${status === 'Driver Rejected' ? 'bg-orange-200 border border-orange-500' : 'bg-red-200 border border-red-500'} transform transition-transform duration-300 hover:scale-105`}
-                onClick={() => handleActionClick(application, 'Driver Rejected')}>Reject</button>
+    <div className="w-[85%] ml-10 mt-6 mr-2 text-[#6d6d6d] text-base">
+      {/* Driver Application Header */}
+      <div className="flex justify-between items-center mb-7 bg-blue-100 p-3 rounded">
+        <h2 className="text-2xl font-bold text-black">
+          Driver Applications
+        </h2>
+      </div>
+
+      {/* Driver Application Table */}
+      <div className="list add flex-col">
+        <div className="list-table">
+          {/* Column Titles */}
+          <div style={{ gridTemplateColumns: '0.7fr 0.7fr 2fr 2fr 1fr 1.5fr 0.8fr 0.8fr'}} className="grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm bg-[#123B66] text-white">
+            <b>Status</b>
+            <b>Date</b>
+            <b>Personal Details</b>
+            <b>Driving Details</b>
+            <b>Availability</b>
+            <b>Preferred Location</b>
+            <b className="col-span-2">Action</b>
+          </div>
+          {/* Application Data */}
+          {applications.length === 0 ? (
+            <div className="text-center py-10 border border-zinc-300 bg-[#DCEEFF] text-[#123B66] font-medium">
+              No applications found.
             </div>
-          )
-        })}
+          ) : (currentItems.map((application) => {
+              const status = statuses[application.userId];
+              return (
+                <div key={application._id}
+                  style={{ gridTemplateColumns: '0.7fr 0.7fr 2fr 2fr 1fr 1.5fr 0.8fr 0.8fr'}} className="grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm">
+                  {/* Status */}
+                  <div className="flex justify-center">
+                    <img className="w-12 h-12" src={apply_icon} alt="Application Status"/>
+                  </div>
+                  {/* Date */}
+                  <div>
+                      <p className="text-xs text-gray-500">
+                          {formatDate(application.date)}
+                      </p>
+                  </div>
+                  {/* Personal Details */}
+                  <div>
+                    <p className="font-medium text-gray-700">
+                      {application.address.firstName}{" "}
+                      {application.address.lastName}
+                    </p>
+                    <p>{application.address.email}</p>
+                    <p>{application.address.phone}</p>
+                  </div>
+                  {/* Driving Details */}
+                  <div>
+                    <p className="font-medium text-gray-700">
+                      {application.licencenumber}
+                    </p>
+                    <p>
+                      {formatDate(application.expiredate)}
+                    </p>
+                    <p>
+                      {application.experience} years
+                    </p>
+                  </div>
+                  {/* Availability */}
+                  <p>
+                    {application.availability}
+                  </p>
+                  {/* Preferred Location */}
+                  <p>
+                    {application.preferredLocation}
+                  </p>
+                  {/* Accept */}
+                  <button
+                    className={`p-2 outline-none transition-transform duration-300 hover:scale-105 ${
+                      status === "Driver Confirmed"
+                        ? "bg-green-200 border border-green-500"
+                        : "bg-blue-200 border border-blue-500"
+                    }`}
+                    onClick={() =>
+                      handleActionClick(
+                        application,
+                        "Driver Confirmed"
+                      )
+                    }>
+                    Accept
+                  </button>
+                  {/* Reject */}
+                  <button
+                    className={`p-2 outline-none transition-transform duration-300 hover:scale-105 ${
+                      status === "Driver Rejected"
+                        ? "bg-orange-200 border border-orange-500"
+                        : "bg-red-200 border border-red-500"
+                    }`}
+                    onClick={() =>
+                      handleActionClick(
+                        application,
+                        "Driver Rejected"
+                      )
+                    }>
+                    Reject
+                  </button>
+                </div>
+              );
+            })
+          )}
         </div>
-        ))}
-      </div>
-      <div className="flex justify-center mt-5">
-        {Array.from({ length: totalPages }, (_, index) => (
+
+        {/* Pagination */}
+        {applications.length > itemsPerPage && (
+          <div className="flex justify-center items-center gap-4 mt-5">
+          {/* Previous Button */}
           <button
-            key={index}
-            className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
-            onClick={() => handlePageChange(index + 1)}>
-            {index + 1}
-          </button>
-        ))}
+            className="px-5 py-2 bg-blue-500 text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}>Prev</button>
+          {/* Page Number */}
+          <span className="text-sm font-medium text-black">
+            Page {currentPage} of {totalPages}
+          </span>
+          {/* Next Button */}
+          <button
+            className="px-5 py-2 bg-blue-500 text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}>Next</button>
+          </div>
+        )}
       </div>
+
+      {/* Confirmation Modal */}
       <Confirmation
         show={showConfirmation}
         message={`Are you sure you want to ${action === 'Driver Confirmed' ? 'accept' : 'reject'} this application?`}

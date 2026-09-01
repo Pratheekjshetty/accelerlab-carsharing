@@ -204,7 +204,7 @@ const UserPage = ({ url }) => {
             <b>Name</b>
             <b>Email</b>
             <b>Contact Number</b>
-            <b colSpan="2">Action</b>
+            <b className="col-span-2">Action</b>
           </div>
           {/* User Data */}
           {users.length === 0 ? (
@@ -232,7 +232,7 @@ const UserPage = ({ url }) => {
               className="px-5 py-2 bg-blue-500 text-white rounded disabled:opacity-40 disabled:cursor-not-allowed"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}>Prev</button>
-              {/* Page Number */}
+            {/* Page Number */}
             <span className="text-sm font-medium text-black">
               Page {currentPage} of {totalPages}
             </span>

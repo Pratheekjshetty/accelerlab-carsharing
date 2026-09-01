@@ -238,13 +238,13 @@ const List = ({ url }) => {
       <div className='list add flex-col'>
         <div className="list-table">
           {/* Column Titles */}
-          <div style={{ gridTemplateColumns: '0.5fr 2fr 1fr 1fr 1fr 1fr' }} className="title grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm bg-[#123B66] text-white">
+          <div style={{ gridTemplateColumns: '0.5fr 2fr 1fr 1fr 1fr 0.5fr 0.5fr' }} className="title grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm bg-[#123B66] text-white">
             <b>Image</b>
             <b>Name</b>
             <b>Category</b>
             <b>Location</b>
             <b>Price</b>
-            <b colSpan="2">Action</b>
+            <b className="col-span-2">Action</b>
           </div>
           {/* Cars Data */}
           {list.length === 0 ? (
