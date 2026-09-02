@@ -15,6 +15,7 @@ const UserPage = ({ url }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [addImage, setAddImage] = useState(false);
+  const [existingImage, setExistingImage] = useState(null);
   const [image, setImage] = useState(false);
 
   const [addData, setAddData] = useState({
@@ -41,6 +42,7 @@ const UserPage = ({ url }) => {
       }
     } catch (err) {
       toast.error('An error occurred while fetching users');
+      console.error(err);
     }
   }, [url]);
 
@@ -57,6 +59,7 @@ const UserPage = ({ url }) => {
       }
     } catch (err) {
       toast.error('An error occurred while deactivating the user');
+      console.error(err);
     }
   };
 
@@ -84,8 +87,31 @@ const UserPage = ({ url }) => {
       email: user.email,
     });
     setImage(false);
-    setCurrentEditId(user._id);
+    setExistingImage(user.image);
     setIsEditMode(true);
+    setCurrentEditId(user._id);
+  };
+
+  const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
+  const MAX_IMAGE_SIZE_MB = 5;
+
+  const validateImageFile = (file) => {
+    if (!file) return false;
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      toast.error("Only JPG, JPEG or PNG images are allowed", {
+        icon: false,
+        style: { fontWeight: 500 },
+      });
+      return false;
+    }
+    if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+      toast.error(`Image must be smaller than ${MAX_IMAGE_SIZE_MB}MB`, {
+        icon: false,
+        style: { fontWeight: 500 },
+      });
+      return false;
+    }
+    return true;
   };
 
   const onChangeHandler = (event) => {
@@ -109,6 +135,7 @@ const UserPage = ({ url }) => {
       if (response.data.success) {
         setData({ name: "", phone: "", email: "" });
         setImage(false);
+        setExistingImage(null);
         setIsEditMode(false);
         setCurrentEditId(null);
         toast.success(response.data.message || "User updated successfully");
@@ -123,15 +150,17 @@ const UserPage = ({ url }) => {
   };
 
   const handleCancel = () => {
-    setIsEditMode(false);
-    setCurrentEditId(null);
     setData({ name: "", phone: "", email: "" });
     setImage(false);
+    setExistingImage(null);
+    setIsEditMode(false);
+    setCurrentEditId(null);
   };
 
   // Add new user
   const handleAddUser = async (event) => {
     event.preventDefault();
+    // Check image manually
     if (!addImage) {
       toast.error("Please upload a profile image");
       return;
@@ -149,6 +178,7 @@ const UserPage = ({ url }) => {
         setAddData({ name: "", phone: "", email: "", password: "" });
         setAddImage(false);
         setIsAddMode(false);
+        // Refresh user list
         await fetchUsers();
       } else {
         toast.error(response.data.message || "Error while adding the user");
@@ -199,7 +229,7 @@ const UserPage = ({ url }) => {
       <div className="list add flex-col">
         <div className="list-table">
           {/* Column Titles */}
-          <div style={{ gridTemplateColumns: '0.5fr 2fr 2fr 1.5fr 0.5fr 0.5fr' }} className="title grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm bg-[#123B66] text-white">
+          <div style={{ gridTemplateColumns: '0.7fr 2fr 2fr 1.5fr 0.5fr 0.5fr' }} className="title grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm bg-[#123B66] text-white">
             <b>Profile</b>
             <b>Name</b>
             <b>Email</b>
@@ -213,8 +243,8 @@ const UserPage = ({ url }) => {
             </div>
           ) : (currentItems.map((user, index) => (
             <div key={user._id || index}
-              style={{ gridTemplateColumns: '0.5fr 2fr 2fr 1.5fr 0.5fr 0.5fr' }} className="title grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm">
-              <img className="w-[50px] h-[50px] object-cover rounded-full" src={`${url}/${user.image}`} alt="User Profile"/>
+              style={{ gridTemplateColumns: '0.7fr 2fr 2fr 1.5fr 0.5fr 0.5fr' }} className="title grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm">
+              <img className="w-[65px] h-[65px] object-cover rounded-full" src={`${url}/${user.image}`} alt="User Profile"/>
               <p>{user.name}</p>
               <p>{user.email}</p>
               <p>{user.phone}</p>
@@ -268,14 +298,21 @@ const UserPage = ({ url }) => {
                 <p className="text-sm font-medium text-gray-700">Profile Image</p>
                 <label htmlFor="editImage" className="cursor-pointer w-fit">
                   <img
-                    className="w-32 h-24 object-contain border border-dashed border-gray-300 rounded-full"
-                    src={image ? URL.createObjectURL(image) : upload_area}
+                    className="w-24 h-24 object-contain border border-dashed border-gray-300 rounded-full"
+                    src={image ? URL.createObjectURL(image) : existingImage ? `${url}/${existingImage}` : upload_area}
                     alt="Upload"/>
                 </label>
-                <input
-                  onChange={(e) => setImage(e.target.files[0])}
+                <input onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (validateImageFile(file)) {
+                      setImage(file);
+                    } else {
+                      e.target.value = "";
+                    }
+                  }}
                   type="file"
                   id="editImage"
+                  accept="image/png, image/jpeg, image/jpg"
                   hidden/>
               </div>
               {/* Name */}
@@ -359,14 +396,21 @@ const UserPage = ({ url }) => {
                 <p className="text-sm font-medium text-gray-700">Profile Image</p>
                 <label htmlFor="addUserImage" className="cursor-pointer w-fit">
                   <img
-                    className="w-32 h-24 object-contain border border-dashed border-gray-300 rounded-full"
+                    className="w-24 h-24 object-contain border border-dashed border-gray-300 rounded-full"
                     src={addImage ? URL.createObjectURL(addImage) : upload_area}
                     alt="Upload"/>
                 </label>
-                <input
-                  onChange={(e) => setAddImage(e.target.files[0])}
+                <input onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (validateImageFile(file)) {
+                      setAddImage(file);
+                    } else {
+                      e.target.value = "";
+                    }
+                  }}
                   type="file"
                   id="addUserImage"
+                  accept="image/png, image/jpeg, image/jpg"
                   hidden
                   required/>
               </div>

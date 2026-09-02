@@ -16,6 +16,7 @@ const List = ({ url }) => {
   const [selectedCar, setSelectedCar] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [addImage, setAddImage] = useState(false);
+  const [existingImage, setExistingImage] = useState(null);
 
   const [addData, setAddData] = useState({
     name: "",
@@ -28,6 +29,7 @@ const List = ({ url }) => {
     seats: "",
   });
 
+  // Fetch cars
   const fetchList = useCallback(async () => {
     try {
       const response = await axios.get(`${url}/api/car/listactive-car`);
@@ -38,6 +40,7 @@ const List = ({ url }) => {
       }
     } catch (error) {
       toast.error("Error fetching the list");
+      console.error(error);
     }
   }, [url]);
 
@@ -54,28 +57,8 @@ const List = ({ url }) => {
       }
     } catch (error) {
       toast.error("Error removing the car item");
+      console.error(error);
     }
-  };
-
-  const handleDeleteClick = (carId) => {
-    setSelectedCar(carId);
-    setShowModal(true);
-  };
-
-  const editCar = (car) => {
-    setData({
-      name: car.name,
-      description: car.description,
-      price: car.price,
-      category: car.category,
-      location: car.location,
-      color: car.color,
-      seats: car.seats,
-      model: car.model,
-    });
-    setImage(null);
-    setCurrentEditId(car._id);
-    setIsEditMode(true);
   };
 
   useEffect(() => {
@@ -88,28 +71,51 @@ const List = ({ url }) => {
     return () => { document.body.style.overflow = 'auto'; };
   }, [isEditMode]);
 
-  // Pagination calculations
-  const totalPages = Math.ceil(list.length / itemsPerPage);
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const endIdx = startIdx + itemsPerPage;
-  const currentItems = list.slice(startIdx, endIdx);
-
-  // Change page
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
+  // Delete / deactivate button
+  const handleDeleteClick = (carId) => {
+    setSelectedCar(carId);
+    setShowModal(true);
   };
 
-  const [image, setImage] = useState(false);
-  const [data, setData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    category: "Benz",
-    location: "Manglore",
-    color: "",
-    seats: "",
-    model: "",
-  });
+  // Open edit modal with existing car data
+  const editCar = (car) => {
+    setData({
+      name: car.name,
+      description: car.description,
+      price: car.price,
+      category: car.category,
+      location: car.location,
+      color: car.color,
+      seats: car.seats,
+      model: car.model,
+    });
+    setImage(null);
+    setExistingImage(car.image);
+    setCurrentEditId(car._id);
+    setIsEditMode(true);
+  };
+
+  const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
+  const MAX_IMAGE_SIZE_MB = 5;
+
+  const validateImageFile = (file) => {
+    if (!file) return false;
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      toast.error("Only JPG, JPEG or PNG images are allowed", {
+        icon: false,
+        style: { fontWeight: 500 },
+      });
+      return false;
+    }
+    if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+      toast.error(`Image must be smaller than ${MAX_IMAGE_SIZE_MB}MB`, {
+        icon: false,
+        style: { fontWeight: 500 },
+      });
+      return false;
+    }
+    return true;
+  };
 
   const onChangeHandler = (event) => {
     const name = event.target.name;
@@ -146,6 +152,7 @@ const List = ({ url }) => {
         model: "",
       });
       setImage(false);
+      setExistingImage(null);
       setIsEditMode(false);
       setCurrentEditId(null);
       toast.success(response.data.message || "Car updated successfully");
@@ -169,8 +176,10 @@ const List = ({ url }) => {
       model: "",
     });
     setImage(false);
+    setExistingImage(null);
   };
 
+  // Add new car
   const handleAddCar = async (event) => {
     event.preventDefault();
     // Check image manually
@@ -217,6 +226,29 @@ const List = ({ url }) => {
       );
     }
   };
+
+  // Pagination calculations
+  const totalPages = Math.ceil(list.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const currentItems = list.slice(startIdx, endIdx);
+
+  // Change page
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const [image, setImage] = useState(false);
+  const [data, setData] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category: "Benz",
+    location: "Manglore",
+    color: "",
+    seats: "",
+    model: "",
+  });
 
   return (
     <div className='w-[85%] ml-10 mt-6 mr-2 text-[#6d6d6d] text-base'>
@@ -289,7 +321,7 @@ const List = ({ url }) => {
         )}
       </div>
 
-      {/* Edit User Modal */}
+      {/* Edit Car Modal */}
       {isEditMode && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           onClick={handleCancel}>
@@ -313,13 +345,20 @@ const List = ({ url }) => {
                 <label htmlFor="image" className="cursor-pointer w-fit">
                   <img
                     className="w-32 h-24 object-contain border border-dashed border-gray-300"
-                    src={image ? URL.createObjectURL(image) : upload_area}
+                    src={image ? URL.createObjectURL(image) : existingImage ? `${url}/images/${existingImage}` : upload_area}
                     alt="Upload"/>
                 </label>
-                <input
-                  onChange={(e) => setImage(e.target.files[0])}
+                <input onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (validateImageFile(file)) {
+                      setImage(file);
+                    } else {
+                      e.target.value = "";
+                    }
+                  }}
                   type="file"
                   id="image"
+                  accept="image/png, image/jpeg, image/jpg"
                   hidden/>
               </div>
               {/* Car Name */}
@@ -482,10 +521,17 @@ const List = ({ url }) => {
                     }
                     alt="Upload"/>
                 </label>
-                <input
-                  onChange={(e) => setAddImage(e.target.files[0])}
+                <input onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (validateImageFile(file)) {
+                      setAddImage(file);
+                    } else {
+                      e.target.value = "";
+                    }
+                  }}
                   type="file"
                   id="addImage"
+                  accept="image/png, image/jpeg, image/jpg"
                   hidden
                   required/>
               </div>
