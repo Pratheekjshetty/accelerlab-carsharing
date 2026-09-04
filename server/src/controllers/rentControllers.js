@@ -26,29 +26,25 @@ const rentBooking =async(req,res)=>{
         await newRent.save();
         await userModel.findByIdAndUpdate(req.body.userId,{bookingData:{}});
         const amountInPaise = req.body.amount * 100;
-
         const options = {
             amount: amountInPaise, 
             currency: "INR",
             receipt: newRent._id.toString(),
         };
-
         const rent = await razorpay.orders.create(options);
-
         res.json({
             success: true,
             rentId: rent.id,
             amount: rent.amount,
             currency: rent.currency,
             receipt: rent.receipt,
+            key: process.env.RAZORPAY_KEY_ID, 
             success_url: `${frontend_url}/verify?success=true&rentId=${newRent._id}`,
             cancel_url: `${frontend_url}/verify?success=false&rentId=${newRent._id}`,
         });
-    }
-    catch(err){
+    }catch(err){
         console.error(err);
         res.json({ success: false, message: "Rent Booking Error" });
-
     }
 };
 
@@ -58,25 +54,21 @@ const verifyBooking = async(req,res)=>{
     try{
         if(success=="true"){
             await rentModel.findByIdAndUpdate(rentId,{payment:true});
-
             const booking = await rentModel.findById(rentId);
             if (!booking) {
                 return res.status(404).json({ success: false, message: "Booking not found" });
             }
-
             await userModel.findByIdAndUpdate(booking.userId, {
                 $set: {
                     bookingData: booking
                 }
             });
             return res.json({ success: true, message: "Paid and booking data saved" });
-        }
-        else{
+        }else{
             await rentModel.findByIdAndDelete(rentId);
             return res.json({success:false,message:"Not Paid"})
         }
-    }
-    catch(err){
+    }catch(err){
         console.log(err);
         res.json({success:false,message:"Error updating payment status"})
     }
@@ -87,8 +79,7 @@ const userBooking = async(req,res)=>{
     try{
         const booking=await rentModel.find({userId:req.body.userId,payment:true});
         res.json({success:true,data:booking})
-    }
-    catch(err){
+    }catch(err){
         console.log(err);
         res.json({success:false,message:"Error"})
     }
@@ -99,8 +90,7 @@ const listBooking = async(req,res)=>{
     try{
         const booking=await rentModel.find({});
         res.json({success:true,data:booking})
-    }
-    catch(err){
+    }catch(err){
         console.log(err);
         res.json({success:false,message:"Error"})
     }
@@ -111,8 +101,7 @@ const updateStatus = async (req,res)=>{
     try{
         await rentModel.findByIdAndUpdate(req.body.rentId,{status:req.body.status})
         res.json({success:true,message:"Status Updated"})
-    }
-    catch(err){
+    }catch(err){
         console.log(err);
         res.json({success:false,message:"Error"}) 
     }
@@ -125,7 +114,6 @@ const getWeekBookings = async (req, res) => {
         if (!firstBooking) {
           return res.status(404).json({ success: false, message: "No bookings found" });
         }
-    
         const bookings = await rentModel.aggregate([
           {
             $group: {
@@ -149,11 +137,11 @@ const getWeekBookings = async (req, res) => {
         res.status(500).json({ success: false, message: "Error fetching weekly bookings" });
       }
   };
+  
   const getCarBookingPercentages = async (req, res) => {
     try {
       const bookings = await rentModel.find({});
       const totalBookings = bookings.length;
-  
       if (totalBookings === 0) {
         return res.json({ success: true, data: [] });
       }
@@ -176,11 +164,11 @@ const getWeekBookings = async (req, res) => {
           percentage: percentage,
         };
       });
-  
       res.json({ success: true, data: carBookingPercentages });
     } catch (err) {
       console.error(err);
       res.status(500).json({ success: false, message: "Error fetching car booking percentages" });
     }
   };
+
 export {rentBooking,verifyBooking,userBooking,listBooking,updateStatus,getWeekBookings,getCarBookingPercentages}

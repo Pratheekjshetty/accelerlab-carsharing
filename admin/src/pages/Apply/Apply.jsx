@@ -1,5 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import apply_icon from '../../assets/apply_icon.png';
+import pending_icon from '../../assets/pending_icon.png';
+import approve_icon from '../../assets/approve_icon.png';
+import reject_icon from '../../assets/reject_icon.png';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Confirmation from '../../components/Confirmation/Confirmation';
@@ -19,10 +21,10 @@ const Apply = ({ url }) => {
         const reversedApplications = response.data.reverse();
         setApplications(reversedApplications);
         const newStatuses = {};
-        reversedApplications.forEach(app => {
-        newStatuses[app.userId] = app.status;
-      });
-      setStatuses(newStatuses);
+            reversedApplications.forEach(app => {
+            newStatuses[app.userId] = app.status;
+        });
+        setStatuses(newStatuses);
     } catch (err) {
       toast.error("An error occurred while fetching applications");
       console.error(err);
@@ -34,7 +36,6 @@ const Apply = ({ url }) => {
       const endpoint = status === 'Driver Confirmed'
         ? `${url}/api/driver/update-role`
         : `${url}/api/driver/delete-role`;
-
       await axios.post(endpoint, { userId });
       toast.success(`Driver application ${status === 'Driver Confirmed' ? 'accepted' : 'rejected'} successfully`);
       setStatuses(prev => ({ ...prev, [userId]: status }));
@@ -90,13 +91,13 @@ const Apply = ({ url }) => {
       <div className="list add flex-col">
         <div className="list-table">
           {/* Column Titles */}
-          <div style={{ gridTemplateColumns: '0.7fr 0.7fr 2fr 2fr 1fr 1.5fr 0.8fr 0.8fr'}} className="grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm bg-[#123B66] text-white">
-            <b>Status</b>
-            <b>Date</b>
+          <div style={{ gridTemplateColumns: '0.7fr 2fr 2fr 1fr 1.5fr 0.7fr 0.8fr 0.8fr'}} className="grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm bg-[#123B66] text-white">
+            <b>Applied Date</b>
             <b>Personal Details</b>
             <b>Driving Details</b>
             <b>Availability</b>
             <b>Preferred Location</b>
+            <b>Status</b>
             <b className="col-span-2">Action</b>
           </div>
           {/* Application Data */}
@@ -108,14 +109,10 @@ const Apply = ({ url }) => {
               const status = statuses[application.userId];
               return (
                 <div key={application._id}
-                  style={{ gridTemplateColumns: '0.7fr 0.7fr 2fr 2fr 1fr 1.5fr 0.8fr 0.8fr'}} className="grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm">
-                  {/* Status */}
-                  <div className="flex justify-center">
-                    <img className="w-12 h-12" src={apply_icon} alt="Application Status"/>
-                  </div>
-                  {/* Date */}
+                  style={{ gridTemplateColumns: '0.7fr 2fr 2fr 1fr 1.5fr 0.7fr 0.8fr 0.8fr'}} className="grid justify-center items-center gap-2 px-3 py-4 border border-solid border-zinc-300 text-sm">
+                  {/* Applied Date */}
                   <div>
-                      <p className="text-xs text-gray-500">
+                      <p className="font-medium text-gray-700">
                           {formatDate(application.date)}
                       </p>
                   </div>
@@ -141,43 +138,52 @@ const Apply = ({ url }) => {
                     </p>
                   </div>
                   {/* Availability */}
-                  <p>
+                  <p className="font-medium text-gray-700">
                     {application.availability}
                   </p>
                   {/* Preferred Location */}
-                  <p>
+                  <p className="font-medium text-gray-700">
                     {application.preferredLocation}
                   </p>
-                  {/* Accept */}
-                  <button
-                    className={`p-2 outline-none transition-transform duration-300 hover:scale-105 ${
-                      status === "Driver Confirmed"
-                        ? "bg-green-200 border border-green-500"
-                        : "bg-blue-200 border border-blue-500"
-                    }`}
-                    onClick={() =>
-                      handleActionClick(
-                        application,
-                        "Driver Confirmed"
-                      )
-                    }>
-                    Accept
-                  </button>
-                  {/* Reject */}
-                  <button
-                    className={`p-2 outline-none transition-transform duration-300 hover:scale-105 ${
-                      status === "Driver Rejected"
-                        ? "bg-orange-200 border border-orange-500"
-                        : "bg-red-200 border border-red-500"
-                    }`}
-                    onClick={() =>
-                      handleActionClick(
-                        application,
-                        "Driver Rejected"
-                      )
-                    }>
-                    Reject
-                  </button>
+                  {/* Status */}
+                  <div className="flex justify-center items-center gap-2">
+                      <img className="w-12 h-12" src={ status === "Driver Confirmed" ? approve_icon : status === "Driver Rejected" ? reject_icon : pending_icon}
+                        alt={ status === "Driver Confirmed" ? "Approved" : status === "Driver Rejected" ? "Rejected" : "Pending"}/>
+                  </div>
+                  {/* Accept / Approved */}
+                  {status === "Driver Confirmed" ? (
+                    <div className="p-2 text-center bg-green-200 border border-green-500 text-green-700 font-medium">
+                      Approved
+                    </div>
+                  ) : (
+                    <button
+                      className="p-2 outline-none transition-transform duration-300 hover:scale-105 bg-blue-200 border border-blue-500"
+                      onClick={() =>
+                        handleActionClick(
+                          application,
+                          "Driver Confirmed"
+                        )
+                      }>
+                      Accept
+                    </button>
+                  )}
+                  {/* Reject / Rejected */}
+                  {status === "Driver Rejected" ? (
+                    <div className="p-2 text-center bg-orange-200 border border-orange-500 text-orange-700 font-medium">
+                      Rejected
+                    </div>
+                  ) : (
+                    <button
+                      className="p-2 outline-none transition-transform duration-300 hover:scale-105 bg-red-200 border border-red-500"
+                      onClick={() =>
+                        handleActionClick(
+                          application,
+                          "Driver Rejected"
+                        )
+                      }>
+                      Reject
+                    </button>
+                  )}
                 </div>
               );
             })
