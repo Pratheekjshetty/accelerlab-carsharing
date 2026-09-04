@@ -3,7 +3,6 @@ import {addRating, getRatingsByCarId, getRatingById, updateRating, addAdminRespo
 import authMiddleware from "../middleware/auth.js"
 
 const ratingRouter = express.Router();
-
 ratingRouter.post('/add',authMiddleware,addRating);
 ratingRouter.get('/car/:carId', getRatingsByCarId);
 ratingRouter.get('/:id', getRatingById);

@@ -4,7 +4,6 @@ import { applyDriver, getApplications, updateApplicationStatus, deleteApplicatio
 import { authMiddleware } from '../middleware/auth2.js';
 
 const driverRouter = express.Router();
-
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 

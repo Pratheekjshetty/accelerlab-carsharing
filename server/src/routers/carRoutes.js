@@ -3,7 +3,6 @@ import { addCar,listCar,listActiveCars,removeCar,deactivateCar,editCar,getTotalC
 import multer from 'multer'
 
 const carRouter = express.Router();
-
 //Image Storage Engine
 const storage = multer.diskStorage({
     destination:"uploads",

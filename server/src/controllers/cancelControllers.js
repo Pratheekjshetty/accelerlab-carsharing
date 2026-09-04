@@ -1,6 +1,7 @@
 import cancelModel from '../models/cancelModels.js';
 import rentModel from '../models/rentModels.js';
 
+//cancel booking
 const cancelBooking = async (req, res) => {
     try {
         const {
@@ -13,7 +14,6 @@ const cancelBooking = async (req, res) => {
             booking_date: bookingDate,
             current_date: currentDate
         } = req.body;
-
         const newCancellation = new cancelModel({
             firstName, lastName,
             bookingid: bookingId,
@@ -24,7 +24,6 @@ const cancelBooking = async (req, res) => {
             bookingdate: bookingDate,
             currentdate: currentDate
         });
-
         await newCancellation.save();
         res.status(201).send({ message: 'Booking cancellation request submitted successfully!' });
     } catch (error) {
@@ -33,6 +32,7 @@ const cancelBooking = async (req, res) => {
     }
 };
 
+//get all cancellations
 const getCancellations = async (req, res) => {
     try {
         const cancellations = await cancelModel.find({});
@@ -43,24 +43,22 @@ const getCancellations = async (req, res) => {
     }
 };
 
+//update cancellation status and booking status
 const updateCancellationStatus = async (req, res) => {
     try {
         const { bookingid } = req.body;
         if (!bookingid) {
             return res.status(400).json({ message: "Booking ID is required" });
         }
-
         // Update the cancellation status in cancelModel
         const cancellation = await cancelModel.findOneAndUpdate(
             { bookingid },
             { status: "Cancellation Approved" },
             { new: true }
         );
-
         if (!cancellation) {
             return res.status(404).json({ message: "Cancellation not found" });
         }
-
         // Update the booking status in rentModel
         const rentBooking = await rentModel.findById(bookingid);
         if (!rentBooking) {
@@ -68,7 +66,6 @@ const updateCancellationStatus = async (req, res) => {
         }
         rentBooking.status = "Car Cancelled";
         await rentBooking.save();
-
         res.status(200).json({ message: "Booking status updated successfully", rentBooking });
     } catch (error) {
         console.error('Error updating cancellation status:', error);
@@ -76,24 +73,22 @@ const updateCancellationStatus = async (req, res) => {
     }
 };
 
+//update cancellation status and booking status
 const deleteCancellationStatus = async (req, res) => {
     try {
         const { bookingid } = req.body;
         if (!bookingid) {
             return res.status(400).json({ message: "Booking ID is required" });
         }
-
         // Update the cancellation status in cancelModel
         const cancellation = await cancelModel.findOneAndUpdate(
             { bookingid },
             { status: "Cancellation Rejected" },
             { new: true }
         );
-
         if (!cancellation) {
             return res.status(404).json({ message: "Cancellation not found" });
         }
-
         // Update the booking status in rentModel
         const rentBooking = await rentModel.findById(bookingid);
         if (!rentBooking) {
@@ -101,7 +96,6 @@ const deleteCancellationStatus = async (req, res) => {
         }
         rentBooking.status = "Car Not Cancelled";
         await rentBooking.save();
-
         res.status(200).json({ message: "Booking status updated successfully", rentBooking });
     } catch (error) {
         console.error('Error updating cancellation status:', error);
@@ -109,6 +103,7 @@ const deleteCancellationStatus = async (req, res) => {
     }
 };
 
+//delete cancellation
 const deleteCancellation = async (req, res) => {
     try {
         const { cancelId } = req.body;

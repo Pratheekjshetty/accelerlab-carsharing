@@ -57,8 +57,7 @@ const listBlog = async (req, res) => {
     try{
         const blogs=await blogModel.find({});
         res.json({success:true,data:blogs})
-    }
-    catch(err){
+    }catch(err){
         console.log(err)
         res.json({success:false,message:"Error"})
     }
@@ -88,6 +87,7 @@ const getBlogById = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error fetching blog by ID' });
     }
 };
+
 // get total blogs
 const getTotalBlogs = async (req, res) => {
     try {

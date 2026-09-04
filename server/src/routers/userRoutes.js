@@ -4,7 +4,6 @@ import authMiddleware from '../middleware/auth.js';
 import multer from 'multer'
 
 const userRouter = express.Router()
-
 //Image Storage Engine
 const storage = multer.diskStorage({
     destination: "user-uploads",

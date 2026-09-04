@@ -1,6 +1,7 @@
 import availableModel from '../models/availableModels.js';
 import carModel from '../models/carModels.js'; 
 
+//add available booking
 const availableBooking = async (req, res) => {
     try{
         const {carId} = req.body;
@@ -20,6 +21,8 @@ const availableBooking = async (req, res) => {
         res.json({ success: false, message: "Available Booking Error" });
     }
 };
+
+//list available booking
 const listadminBooking = async (req, res) => {
     try{
         const available=await availableModel.find({});
