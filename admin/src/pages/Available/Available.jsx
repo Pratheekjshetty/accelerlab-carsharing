@@ -95,14 +95,12 @@ const Available = ({ url }) => {
 
     const isCarBooked = (carId) => {
         if (!startDate || !endDate) return false;
-
         const iscustomerBooking = bookingList.some(booking => (
             booking.carItemId === carId &&
             (booking.status === "Car Booked" || booking.status === "Car Started" || booking.status === "Car Reached Destination" || booking.status === "Car Not Cancelled") &&
             new Date(startDate) <= new Date(booking.dropoffDate) &&
             new Date(endDate) >= new Date(booking.pickupDate)
         ));
-
         const isadminBooking = adminBookingList.some(booking => (
             booking.carItemId === carId &&
             (booking.status === "Car Booked by Admin" || booking.status === "Admin Car Being Started" || booking.status === "Admin Car Being Ended") &&
@@ -133,7 +131,6 @@ const Available = ({ url }) => {
                 startDate,
                 endDate
             });
-    
             if (response.data.success) {
                 toast.success(response.data.message);
             } else {
@@ -146,15 +143,28 @@ const Available = ({ url }) => {
     };
 
     return (
-        <div className="mx-20 my-12">
-            <h2 className="text-2xl font-bold">Update Car Availability</h2>
+        <div className="w-[85%] ml-10 mt-6 mr-2 text-[#6d6d6d] text-base">
+            {/* Car Availability Page Header */}
+            <div className="flex justify-between items-center mb-7 bg-blue-100 p-3 rounded">
+                <h2 className="text-2xl font-bold text-black">
+                Update Car Availability
+                </h2>
+            </div>
             <div className="mt-5">
                 <label className="block text-lg font-semibold mb-2">Start Date:</label>
-                <input type="date" value={startDate} onChange={handleStartDateChange} className="border p-2 w-full"/>
+                <input type="date" value={startDate} onChange={handleStartDateChange} onClick={(e) => {
+                    if (e.currentTarget.showPicker) {
+                        e.currentTarget.showPicker();
+                    }
+                }} className="border p-2 w-full cursor-pointer"/>
             </div>
             <div className="mt-5">
                 <label className="block text-lg font-semibold mb-2">End Date:</label>
-                <input type="date" value={endDate} onChange={handleEndDateChange} className="border p-2 w-full"/>
+                <input type="date" value={endDate} onChange={handleEndDateChange} onClick={(e) => {
+                    if (e.currentTarget.showPicker) {
+                        e.currentTarget.showPicker();
+                    }
+                }} className="border p-2 w-full cursor-pointer"/>
             </div>
             <div className="mt-5">
                 <h3 className="text-lg font-semibold mb-3">Select Car:</h3>

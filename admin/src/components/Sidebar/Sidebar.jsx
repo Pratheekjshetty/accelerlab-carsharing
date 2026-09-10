@@ -3,12 +3,13 @@ import './Sidebar.css'
 import home_icon from '../../assets/home_icon.png'
 import user_icon from '../../assets/user_icon.png'
 import driver_icon from '../../assets/driver_icon.png'
-import add_icon from '../../assets/add_icon.png'
+// import add_icon from '../../assets/add_icon.png'
 import order_icon from '../../assets/order_icon.png'
 import car_icon from '../../assets/car_icon.png'
 import cancel_icon from '../../assets/cancel.png'
 import apply_icon from '../../assets/apply.png'
 import available_icon from '../../assets/event_available.png'
+import settings_icon from '../../assets/settings.png'
 import { NavLink } from 'react-router-dom'
 
 const navItems = [
@@ -21,6 +22,7 @@ const navItems = [
   { to: '/available', icon: available_icon, label: 'Available' },
   { to: '/cancel', icon: cancel_icon, label: 'Cancelation' },
   { to: '/apply', icon: apply_icon, label: 'Application' },
+  { to: '/settings', icon: settings_icon, label: 'Settings' },
 ]
 
 const Sidebar = () => {

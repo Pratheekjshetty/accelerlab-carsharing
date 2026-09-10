@@ -1,0 +1,174 @@
+.settings {
+  width: 85%;
+  margin-left: 40px;
+  margin-top: 24px;
+  margin-right: 8px;
+  color: #6d6d6d;
+  font-size: 14px;
+}
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  background: #dbeafe;
+  padding: 12px;
+  border-radius: 4px;
+}
+.settings-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: black;
+}
+/* =========================
+   SETTINGS CARD
+========================= */
+.settings-card {
+  margin-bottom: 18px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  background: white;
+  overflow: hidden;
+}
+/* =========================
+   CARD HEADER
+========================= */
+.settings-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 9px;
+  background: #123b66;
+  color: white;
+}
+.settings-card-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+/* =========================
+   ADD BUTTON
+========================= */
+.add-section-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  background: #16a34a;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.add-section-btn:hover {
+  background: #15803d;
+}
+/* =========================
+   CARD BODY
+========================= */
+.settings-card-body {
+  padding: 20px;
+}
+/* =========================
+   ADD FORM
+========================= */
+.setting-add-form {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.setting-add-form input {
+  flex: 1;
+  padding: 5px 6px;
+  border: 1px solid #9ca3af;
+  border-radius: 4px;
+  outline: none;
+  font-size: 14px;
+}
+.setting-add-form input:focus {
+  border-color: #123b66;
+}
+.setting-add-form button {
+  padding: 10px 25px;
+  border: none;
+  background: #16a34a;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.setting-add-form button:hover {
+  background: #15803d;
+}
+/* =========================
+   TABLE
+========================= */
+.settings-table {
+  width: 100%;
+  border: 1px solid #d1d5db;
+}
+.settings-table-row {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  align-items: center;
+  min-height: 50px;
+  border-bottom: 1px solid #d1d5db;
+  padding: 0 15px;
+}
+.settings-table-row:last-child {
+  border-bottom: none;
+}
+.settings-table-header {
+  background: #123b66;
+  color: white;
+  font-weight: 600;
+}
+.settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.settings-actions button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+.edit-btn {
+  background: #2563eb;
+}
+.edit-btn:hover {
+  background: #1d4ed8;
+}
+.delete-btn {
+  background: #dc2626;
+}
+.delete-btn:hover {
+  background: #b91c1c;
+}
+/* =========================
+   EMPTY
+========================= */
+.no-settings {
+  padding: 25px;
+  text-align: center;
+  color: #6b7280;
+}
+.settings-sections {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+/* Large screens - 2 cards per row */
+@media (min-width: 1024px) {
+  .settings-sections {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

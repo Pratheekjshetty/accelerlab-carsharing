@@ -17,6 +17,7 @@ import blogRouter from '../server/src/routers/blogRoutes.js';
 import ratingRouter from './src/routers/ratingRoutes.js';
 import nodemailer from 'nodemailer';
 import availableRouter from './src/routers/availableRoutes.js';
+import settingsRouter from './src/routers/settingsRoutes.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,19 +34,19 @@ app.use(cors())
 connectDB();
 
 //api endpoints
-app.use('/images',express.static('uploads'))
-app.use('/api/car', carRouter)
-app.use('/user-uploads', express.static(path.join(__dirname, 'user-uploads')))
-app.use("/api/user", userRouter)
-app.use("/api/book", rentRouter)
+app.use('/images',express.static('uploads'));
+app.use('/api/car', carRouter);
+app.use('/user-uploads', express.static(path.join(__dirname, 'user-uploads')));
+app.use("/api/user", userRouter);
+app.use("/api/book", rentRouter);
 app.use("/api/cancel", cancelRouter);
 app.use('/doc-uploads', express.static('doc-uploads'));
 app.use('/api/driver', driverRouter);
 app.use('/blog-uploads', express.static('blog-uploads'));
 app.use('/api/blog', blogRouter);
 app.use('/api/rating',ratingRouter);
-app.use('/api/available',availableRouter) 
-
+app.use('/api/available',availableRouter);
+app.use('/api/settings', settingsRouter);
 app.post('/api/contact', async (req, res) => {
     const { name, email, message } = req.body;
   

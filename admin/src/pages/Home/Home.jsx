@@ -107,7 +107,7 @@ const Dashboard = ({ url }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+    <div className="w-[85%] ml-10 mt-6 mr-2 text-[#6d6d6d] text-base">
         <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full" role="status">
           <span className="sr-only">Loading...</span>
         </div>
@@ -116,9 +116,13 @@ const Dashboard = ({ url }) => {
   }
 
   return (
-    <div className="dashboard-container bg-gray-100 w-full">
+    <div className="w-[85%] ml-10 mt-6 mr-2 text-[#6d6d6d] text-base">
+      <div className="flex justify-center items-center mb-7 bg-blue-100 p-3 rounded">
+        <h2 className="text-3xl font-bold text-black text-center">
+          Admin Dashboard
+        </h2>
+      </div>
       <div className="mx-20 my-12">
-        <h1 className="text-3xl font-bold text-center mb-8">Admin Dashboard</h1>
         <div className="overview-cards grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="card bg-gradient-to-r from-blue-400 to-blue-600 text-white p-6 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200">
             <FaUsers className="text-3xl mb-3" />

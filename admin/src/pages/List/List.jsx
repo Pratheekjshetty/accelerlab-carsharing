@@ -9,6 +9,8 @@ import Confirmation from '../../components/Confirmation/Confirmation';
 const List = ({ url }) => {
   const [list, setList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [categories, setCategories] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [isAddMode, setIsAddMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentEditId, setCurrentEditId] = useState(null);
@@ -22,8 +24,8 @@ const List = ({ url }) => {
     name: "",
     description: "",
     price: "",
-    category: "Benz",
-    location: "Manglore",
+    category: "",
+    location: "",
     color: "",
     model: "",
     seats: "",
@@ -41,6 +43,22 @@ const List = ({ url }) => {
     } catch (error) {
       toast.error("Error fetching the list");
       console.error(error);
+    }
+  }, [url]);
+
+  // Fetch categories and locations from Settings
+  const fetchSettings = useCallback(async () => {
+    try {
+      const response = await axios.get(`${url}/api/settings/list`);
+      if (response.data.success) {
+        setCategories(response.data.category || []);
+        setLocations(response.data.location || []);
+      } else {
+        toast.error(response.data.message || "Failed to fetch settings");
+      }
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+      toast.error(error.response?.data?.message || "Error fetching settings");
     }
   }, [url]);
 
@@ -63,7 +81,8 @@ const List = ({ url }) => {
 
   useEffect(() => {
     fetchList();
-  }, [fetchList]);
+    fetchSettings();
+  }, [fetchList, fetchSettings]);
 
   // Lock background scroll while modal is open
   useEffect(() => {
@@ -409,12 +428,12 @@ const List = ({ url }) => {
                     value={data.category}
                     name="category"
                     required>
-                    <option value="Benz">Benz</option>
-                    <option value="BMW">BMW</option>
-                    <option value="Ford">Ford</option>
-                    <option value="Nissan">Nissan</option>
-                    <option value="Subaro">Subaro</option>
-                    <option value="Tesla">Tesla</option>
+                    <option value="">Select Car Category</option>
+                    {categories.map((category) => (
+                      <option key={category._id} value={category.name}>
+                        {category.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -453,9 +472,12 @@ const List = ({ url }) => {
                     value={data.location}
                     name="location"
                     required>
-                    <option value="Manglore">Manglore</option>
-                    <option value="Puttur">Puttur</option>
-                    <option value="Bantwal">Bantwal</option>
+                    <option value="">Select Car Location</option>
+                    {locations.map((location) => (
+                      <option key={location._id} value={location.name}>
+                        {location.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -500,8 +522,7 @@ const List = ({ url }) => {
             <div className="relative bg-blue-100 p-3 rounded mb-6">
               <h3 className="text-2xl font-bold text-black">Add New Car</h3>
               {/* Close Button */}
-              <button type="button"
-                onClick={() => setIsAddMode(false)}
+              <button type="button" onClick={() => setIsAddMode(false)}
                 className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-black text-xl">
                 <FaTimes />
               </button>
@@ -548,7 +569,7 @@ const List = ({ url }) => {
                   }
                   value={addData.name}
                   type="text"
-                  placeholder="Type here"
+                  placeholder="Type Car Name"
                   required/>
               </div>
               {/* Description */}
@@ -597,12 +618,12 @@ const List = ({ url }) => {
                     }
                     value={addData.category}
                     required>
-                    <option value="Benz">Benz</option>
-                    <option value="BMW">BMW</option>
-                    <option value="Ford">Ford</option>
-                    <option value="Nissan">Nissan</option>
-                    <option value="Subaro">Subaro</option>
-                    <option value="Tesla">Tesla</option>
+                    <option value="">Select Car Category</option>
+                    {categories.map((category) => (
+                      <option key={category._id} value={category.name}>
+                        {category.name}
+                      </option> 
+                    ))}
                   </select>
                 </div>
               </div>
@@ -651,9 +672,12 @@ const List = ({ url }) => {
                     }
                     value={addData.location}
                     required>
-                    <option value="Manglore">Manglore</option>
-                    <option value="Puttur">Puttur</option>
-                    <option value="Bantwal">Bantwal</option>
+                    <option value="">Select Car Location</option>
+                    {locations.map((location) => (
+                      <option key={location._id} value={location.name}>
+                        {location.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
