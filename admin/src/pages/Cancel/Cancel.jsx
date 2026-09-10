@@ -112,7 +112,7 @@ const Cancel = ({ url }) => {
                     {/* Cancellation Data */}
                     {cancellations.length === 0 ? (
                         <div className="text-center py-10 border border-zinc-300 bg-[#DCEEFF] text-[#123B66] font-medium">
-                        No cancellation found.
+                            No cancellation found.
                         </div>
                     ) : (currentItems.map((cancellation) => {
                             const status = statuses[cancellation.bookingid];

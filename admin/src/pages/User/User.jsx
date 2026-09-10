@@ -238,7 +238,7 @@ const UserPage = ({ url }) => {
           </div>
           {/* User Data */}
           {users.length === 0 ? (
-            <div className="text-center py-10 text-gray-500 border border-zinc-300 bg-[#DCEEFF] text-[#123B66] font-medium">
+            <div className="text-center py-10 border border-zinc-300 bg-[#DCEEFF] text-[#123B66] font-medium">
                 No users found.
             </div>
           ) : (currentItems.map((user, index) => (
