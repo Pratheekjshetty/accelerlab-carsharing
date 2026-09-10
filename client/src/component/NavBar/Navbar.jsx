@@ -41,11 +41,8 @@ return (
         {/* Logo */}
         <div className="cursor-pointer flex-shrink-0">
             <Link to="/">
-                <img
-                    src={logo}
-                    className="w-[160px] lg:w-[180px]"
-                    alt="logo"
-                />
+                <img src={logo} className="w-[160px] lg:w-[180px]"
+                    alt="logo"/>
             </Link>
         </div>
         {/* Navigation */}
@@ -62,16 +59,19 @@ return (
                     <Link to="/contact">Contact</Link>
                 </li>
             )}
-            <li className={`cursor-pointer px-4 py-3 hover:text-blue-900 relative group ${isActive('/blogs')}`}>
-                <Link to="/blogs">
+            <li className={`cursor-pointer px-4 py-3 relative group ${isActive('/blogs')}`}>
+                <Link to="/blogs" className="flex items-center gap-1 hover:text-blue-900 transition-colors duration-200">
                     Blogs
-                    <FaChevronDown className="inline ml-1 text-xs" />
+                    <FaChevronDown className="text-xs transition-transform duration-200 group-hover:rotate-180" />
                 </Link>
-                <ul className="absolute hidden group-hover:block bg-white text-blue-900 mt-2 rounded-md shadow-lg right-0 min-w-[120px] z-50">
-                    <li className="p-2 hover:bg-blue-200 hover:rounded-md cursor-pointer">
-                        <Link to="/add-blog">Add Blog</Link>
+                {/* Dropdown */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:block pt-1 z-50">
+                  <ul className="w-40 bg-white text-blue-900 rounded-lg shadow-[0_8px_20px_rgba(0,0,0,0.15)] border border-blue-100 overflow-hidden">
+                    <li>
+                        <Link to="/add-blog" className="flex items-center px-5 py-3 text-sm font-semibold hover:bg-blue-100 hover:text-blue-900 transition-all duration-200">Add Blog</Link>
                     </li>
-                </ul>
+                  </ul>
+                </div>
             </li>
             <li className={`cursor-pointer px-4 py-3 hover:text-blue-900 ${isActive('/ratings')}`}>
                 <Link to="/ratings">Review & Rating</Link>

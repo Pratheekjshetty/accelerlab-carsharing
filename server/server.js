@@ -34,7 +34,7 @@ app.use(cors())
 connectDB();
 
 //api endpoints
-app.use('/images',express.static('uploads'));
+app.use('/images', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/car', carRouter);
 app.use('/user-uploads', express.static(path.join(__dirname, 'user-uploads')));
 app.use("/api/user", userRouter);
