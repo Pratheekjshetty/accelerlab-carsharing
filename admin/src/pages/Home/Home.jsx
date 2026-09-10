@@ -19,7 +19,6 @@ const Dashboard = ({ url }) => {
     }]
   });
   const [carBookingPercentages, setCarBookingPercentages] = useState([]);
-
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -28,7 +27,6 @@ const Dashboard = ({ url }) => {
           axios.get(`${url}/api/car/total-cars`),
           axios.get(`${url}/api/blog/total-blogs`),
         ]);
-
         setStats({
           users: userResponse.data.counts.users || 0,
           drivers: userResponse.data.counts.drivers || 0,
@@ -41,7 +39,6 @@ const Dashboard = ({ url }) => {
       }
       setLoading(false);
     };
-
     const fetchBookingData = async () => {
       try {
         const response = await axios.get(`${url}/api/book/week-bookings`);
@@ -49,7 +46,6 @@ const Dashboard = ({ url }) => {
         if (response.data && response.data.length > 0) {
           const labels = response.data.map(item => `Week ${item._id.split('-')[1]}, ${item._id.split('-')[0]}`);
           const data = response.data.map(item => item.count);
-
           setBookingData({
             labels: labels,
             datasets: [{
@@ -62,11 +58,10 @@ const Dashboard = ({ url }) => {
           });
         }
       } catch (err) {
-        toast.error("Failed to fetch booking data");
+        // toast.error("Failed to fetch booking data");
         console.error(err);
       }
     };
-
     const fetchCarBookingPercentages = async () => {
       try {
         const response = await axios.get(`${url}/api/book/percentages`);
@@ -76,12 +71,10 @@ const Dashboard = ({ url }) => {
         console.error(err);
       }
     };
-
     fetchStats();
     fetchBookingData();
     fetchCarBookingPercentages();
   }, [url]);
-
   const pieData = {
     labels: carBookingPercentages.map(car => car.carModel),
     datasets: [{

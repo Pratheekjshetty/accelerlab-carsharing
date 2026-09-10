@@ -6,31 +6,27 @@ import CarItem from '../CarItem/CarItem';
 
 const CarDisplay = ({ category, setCategory, seats, setSeats, priceRange, setPriceRange, location, setLocation }) => {
     const { vehicle_list, bookingList, adminbookingList, url} = useContext(StoreContext);
+    const [categories, setCategories] = useState([]);
+    const [locations, setLocations] = useState([]);
     const [filterType, setFilterType] = useState('');
     const [pickupDate, setPickupDate] = useState('');
     const [dropoffDate, setDropoffDate] = useState('');
     const [averageRatings, setAverageRatings] = useState({});
-
     const handleCategoryChange = (e) => {
         setCategory(e.target.value);
     };
-
     const handleSeatsChange = (e) => {
         setSeats(e.target.value);
     };
-
     const handlePriceChange = (e) => {
         setPriceRange(e.target.value);
     };
-
     const handleLocationChange = (e) => {
         setLocation(e.target.value);
     };
-
     const handleFilterTypeChange = (e) => {
         setFilterType(e.target.value);
     };
-
     const handlePickupDateChange = (e) => {
         const newPickupDate = e.target.value;
         const today = new Date().toISOString().split('T')[0];
@@ -42,7 +38,6 @@ const CarDisplay = ({ category, setCategory, seats, setSeats, priceRange, setPri
             setPickupDate(newPickupDate);
         }
     };
-
     const handleDropoffDateChange = (e) => {
         const newDropoffDate = e.target.value;
         if (new Date(pickupDate) > new Date(newDropoffDate)) {
@@ -51,7 +46,6 @@ const CarDisplay = ({ category, setCategory, seats, setSeats, priceRange, setPri
             setDropoffDate(newDropoffDate);
         }
     };
-
     const isPriceInRange = (price, range) => {
         if (range === 'All') return true;
         const [min, max] = range.split('-').map(Number);
@@ -59,10 +53,8 @@ const CarDisplay = ({ category, setCategory, seats, setSeats, priceRange, setPri
     };
     const isCarBooked = (carId) => {
         if (!pickupDate || !dropoffDate) return false;
-    
         const pickup = new Date(pickupDate).setHours(0, 0, 0, 0);
         const dropoff = new Date(dropoffDate).setHours(0, 0, 0, 0);
-    
         return bookingList.some(booking => {
             const bookingPickup = new Date(booking.pickupDate).setHours(0, 0, 0, 0);
             const bookingDropoff = new Date(booking.dropoffDate).setHours(0, 0, 0, 0);
@@ -72,13 +64,10 @@ const CarDisplay = ({ category, setCategory, seats, setSeats, priceRange, setPri
                 dropoff >= bookingPickup;
         });
     };
-    
     const isCarAdminBooked = (carId) => {
         if (!pickupDate || !dropoffDate) return false;
-    
         const pickup = new Date(pickupDate).setHours(0, 0, 0, 0);
         const dropoff = new Date(dropoffDate).setHours(0, 0, 0, 0);
-    
         return adminbookingList.some(adminBooking => {
             const adminStart = new Date(adminBooking.startDate).setHours(0, 0, 0, 0);
             const adminEnd = new Date(adminBooking.endDate).setHours(0, 0, 0, 0);
@@ -88,6 +77,20 @@ const CarDisplay = ({ category, setCategory, seats, setSeats, priceRange, setPri
                 dropoff >= adminStart;
         });
     };
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await axios.get(`${url}/api/settings/list`);
+                if (response.data.success) {
+                    setCategories(response.data.category || []);
+                    setLocations(response.data.location || []);
+                }
+            } catch (error) {
+                console.error("Error fetching settings:", error);
+            }
+        };
+        fetchSettings();
+    }, [url]);
     useEffect(() => {
         const fetchAverageRatings = async () => {
           const ratingsMap = {};
@@ -112,51 +115,55 @@ const CarDisplay = ({ category, setCategory, seats, setSeats, priceRange, setPri
           );
           setAverageRatings(ratingsMap);
         };
-    
         fetchAverageRatings();
-      }, [vehicle_list, url]);
-
+    }, [vehicle_list, url]);
     const renderFilterOptions = () => {
         switch (filterType) {
             case 'Category':
                 return (
-                    <select value={category} onChange={handleCategoryChange} className='bg-blue-300 w-32 rounded-md px-1 ml-1 pt-1'>
+                    <select value={category} onChange={handleCategoryChange} className='h-10 w-44 px-3 border border-gray-300 rounded-md text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 bg-white cursor-pointer'>
                         <option value="All">All</option>
-                        <option value="Benz">Benz</option>
-                        <option value="BMW">BMW</option>
-                        <option value="Ford">Ford</option>
-                        <option value="Nissan">Nissan</option>
-                        <option value="Subaro">Subaro</option>
-                        <option value="Tesla">Tesla</option>
+                        {categories.map((item) => (
+                            <option key={item._id} value={item.name}>
+                                {item.name}
+                            </option>
+                        ))}
                     </select>
                 );
             case 'Seats':
                 return (
-                    <select value={seats} onChange={handleSeatsChange} className='bg-blue-300 w-32 rounded-md px-1 ml-1 pt-1'>
+                    <select value={seats} onChange={handleSeatsChange} className='h-10 w-44 px-3 border border-gray-300 rounded-md text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 bg-white cursor-pointer'>
                         <option value="All">All</option>
+                        <option value="2">2 seats</option>
+                        <option value="3">3 seats</option>
                         <option value="4">4 seats</option>
                         <option value="5">5 seats</option>
+                        <option value="greater5">Greater than 5</option>
                     </select>
                 );
             case 'Price':
                 return (
-                    <select value={priceRange} onChange={handlePriceChange} className='bg-blue-300 w-32 rounded-md px-1 ml-1 pt-1'>
+                    <select value={priceRange} onChange={handlePriceChange} className='h-10 w-44 px-3 border border-gray-300 rounded-md text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 bg-white cursor-pointer'>
                         <option value="All">All</option>
-                        <option value="2000-3000">2k-3k</option>
-                        <option value="3000-4000">3k-4k</option>
-                        <option value="4000-5000">4k-5k</option>
-                        <option value="5000-6000">5k-6k</option>
+                        <option value="0-1999">Less than ₹2000</option>
+                        <option value="2000-3000">₹2000 - ₹3000</option>
+                        <option value="3000-4000">₹3000 - ₹4000</option>
+                        <option value="4000-5000">₹4000 - ₹5000</option>
+                        <option value="5000-6000">₹5000 - ₹6000</option>
+                        <option value="6001-999999">Greater than ₹6000</option>
                     </select>
                 );
-                case 'Location':
-                    return (
-                        <select value={location} onChange={handleLocationChange} className='bg-blue-300 w-32 rounded-md px-1 ml-1 pt-1'>
-                            <option value="All">All</option>
-                            <option value="Manglore">Manglore</option>
-                            <option value="Bantwal">Bantwal</option>
-                            <option value="Puttur">Puttur</option>
-                        </select>
-                    );
+            case 'Location':
+                return (
+                    <select value={location} onChange={handleLocationChange} className='h-10 w-44 px-3 border border-gray-300 rounded-md text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 bg-white cursor-pointer'>
+                        <option value="All">All</option>
+                        {locations.map((item) => (
+                            <option key={item._id} value={item.name}>
+                                {item.name}
+                            </option>
+                        ))}
+                    </select>
+                );
             default:
                 return null;
         }
@@ -164,12 +171,11 @@ const CarDisplay = ({ category, setCategory, seats, setSeats, priceRange, setPri
 
     const filteredVehicles = vehicle_list.filter(item => {
         const matchesCategory = category === 'All' || category === item.category;
-        const matchesSeats = seats === 'All' || seats === String(item.seats);
+        const matchesSeats = seats === 'All' || (seats === 'greater5' && Number(item.seats) > 5) || seats === String(item.seats);
         const matchesPrice = isPriceInRange(item.price, priceRange);
         const matchesLocation = location === 'All' || location === item.location;
         const notBooked = !isCarBooked(item._id);
         const notAdminBooked = !isCarAdminBooked(item._id);
-
         return matchesCategory && matchesSeats && matchesPrice && matchesLocation && notBooked && notAdminBooked ;
     });
 
@@ -177,21 +183,46 @@ const CarDisplay = ({ category, setCategory, seats, setSeats, priceRange, setPri
         <div className='bg-blue-50 p-8'>
             <div className='p-8' id='car_display'>
                 <h2 className='text-xl font-semibold'>Browse by Make</h2>
-                <div className='flex flex-col md:flex-row'>
-                <div className='flex items-center mt-4'>
-                    <input type="date" value={pickupDate} onChange={handlePickupDateChange} className='bg-blue-300 w-32 rounded-md px-1 ml-1' placeholder="Pickup Date" onFocus={(e) => (e.target.type = 'date')} onBlur={(e) => (e.target.type = e.target.value ? 'date' : 'text')}/>
-                    <input type="date" value={dropoffDate} onChange={handleDropoffDateChange} className='bg-blue-300 w-32 rounded-md px-1 ml-1' placeholder="Dropoff Date" onFocus={(e) => (e.target.type = 'date')} onBlur={(e) => (e.target.type = e.target.value ? 'date' : 'text')} />
-                </div>
-                <div className='flex items-center mt-4'>
-                    <select value={filterType} onChange={handleFilterTypeChange} className='bg-blue-300 w-32 rounded-md px-1 pt-1 ml-1'>
-                        <option value="">Select Filter</option>
-                        <option value="Category">Category</option>
-                        <option value="Seats">Seats</option>
-                        <option value="Price">Price</option>
-                        <option value="Location">Location</option>
-                    </select>
-                    {filterType && renderFilterOptions()}
-                </div>
+                <div className="flex flex-col md:flex-row md:items-end gap-4">
+                    {/* Pickup Date */}
+                    <div className="flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700">
+                            Pickup Date
+                        </label>
+                        <input type="date" value={pickupDate} onChange={handlePickupDateChange}
+                            className="h-10 w-40 px-3 border border-gray-300 rounded-md text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 bg-white"/>
+                    </div>
+                    {/* Dropoff Date */}
+                    <div className="flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700">
+                            Dropoff Date
+                        </label>
+                        <input type="date" value={dropoffDate} onChange={handleDropoffDateChange}
+                            className="h-10 w-40 px-3 border border-gray-300 rounded-md text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 bg-white"/>
+                    </div>
+                    {/* Filter */}
+                    <div className="flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700">
+                            Filter By
+                        </label>
+                        <select value={filterType} onChange={handleFilterTypeChange}
+                            className="h-10 w-40 px-3 border border-gray-300 rounded-md text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 bg-white cursor-pointer">
+                            <option value="">Select Filter</option>
+                            <option value="Category">Category</option>
+                            <option value="Seats">Seats</option>
+                            <option value="Price">Price</option>
+                            <option value="Location">Location</option>
+                        </select>
+                    </div>
+                    {/* Selected Filter Value */}
+                    {filterType && (
+                        <div className="flex flex-col gap-1">
+                            <label className="text-sm font-medium text-gray-700">
+                                {filterType}
+                            </label>
+                            {renderFilterOptions()}
+                        </div>
+                    )}
                 </div>
                 {filteredVehicles.length === 0 ? (
                     <div className='flex flex-col justify-center items-center'>
@@ -208,7 +239,6 @@ const CarDisplay = ({ category, setCategory, seats, setSeats, priceRange, setPri
                         const matchesLocation = location === 'All' || location === item.location;
                         const notBooked = !isCarBooked(item._id);
                         const notAdminBooked = !isCarAdminBooked(item._id);
-
                         if (matchesCategory && matchesSeats && matchesPrice && matchesLocation && notBooked && notAdminBooked) {
                             return (
                                 <CarItem

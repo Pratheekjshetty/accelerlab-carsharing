@@ -45,20 +45,20 @@ const Footer = () => {
             <h2 className="text-2xl font-bold">Contact Us</h2>
             <ul>
                 <li className='list-none mb-2.5 curser-pointer' onClick={() => navigate('/contact')}>Contact</li>
-                <li className='list-none mb-2.5 curser-pointer'>Phone:+9876543210</li>
-                <li className='list-none mb-2.5 curser-pointer'>Email:voyagerapp@gmail.com</li>
-                <li className='list-none mb-2.5 curser-pointer'>Github:github.com/voyagerapp</li>
+                <li className='list-none mb-2.5 curser-pointer'>Phone: +9876543210</li>
+                <li className='list-none mb-2.5 curser-pointer'>Email: voyagerapp@gmail.com</li>
+                <li className='list-none mb-2.5 curser-pointer'>Github: github.com/voyagerapp</li>
             </ul>
             <h2 className="text-2xl font-bold">Follow Us</h2>
             <ul>
-                <li className='list-none mb-2.5 curser-pointer'>Facebook:facebook.com/voyagerapp</li>
-                <li className='list-none mb-2.5 curser-pointer'>Instagram:instagram.com/voyagerapp</li>
+                <li className='list-none mb-2.5 curser-pointer'>Facebook: facebook.com/voyagerapp</li>
+                <li className='list-none mb-2.5 curser-pointer'>Instagram: instagram.com/voyagerapp</li>
                 <li className='list-none mb-2.5 curser-pointer'>Twitter:twitter.com/voyagerapp</li>
             </ul>
         </div>
         </div>
         <hr className="w-full h-0.5 my-5 bg-gray-400 border-none"/>
-        <p className='text-center'> © Copright 2024 Voyager.com - All Right Reserved.</p>
+        <p className='text-center'> © Copright {new Date().getFullYear()} Voyager.com - All Right Reserved.</p>
     </div>
   )
 }
