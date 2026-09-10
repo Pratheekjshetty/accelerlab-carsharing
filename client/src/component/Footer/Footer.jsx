@@ -53,7 +53,7 @@ const Footer = () => {
             <ul>
                 <li className='list-none mb-2.5 curser-pointer'>Facebook: facebook.com/voyagerapp</li>
                 <li className='list-none mb-2.5 curser-pointer'>Instagram: instagram.com/voyagerapp</li>
-                <li className='list-none mb-2.5 curser-pointer'>Twitter:twitter.com/voyagerapp</li>
+                <li className='list-none mb-2.5 curser-pointer'>Twitter: twitter.com/voyagerapp</li>
             </ul>
         </div>
         </div>
