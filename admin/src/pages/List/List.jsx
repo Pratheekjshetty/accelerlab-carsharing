@@ -115,7 +115,7 @@ const List = ({ url }) => {
   };
 
   const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
-  const MAX_IMAGE_SIZE_MB = 5;
+  const MAX_IMAGE_SIZE_MB = 25;
 
   const validateImageFile = (file) => {
     if (!file) return false;
@@ -188,8 +188,8 @@ const List = ({ url }) => {
       name: "",
       description: "",
       price: "",
-      category: "Benz",
-      location: "Manglore",
+      category: "",
+      location: "",
       color: "",
       seats: "",
       model: "",
@@ -224,8 +224,8 @@ const List = ({ url }) => {
           name: "",
           description: "",
           price: "",
-          category: "Benz",
-          location: "Manglore",
+          category: "",
+          location: "",
           color: "",
           model: "",
           seats: "",
@@ -262,8 +262,8 @@ const List = ({ url }) => {
     name: "",
     description: "",
     price: "",
-    category: "Benz",
-    location: "Manglore",
+    category: "",
+    location: "",
     color: "",
     seats: "",
     model: "",
@@ -446,6 +446,8 @@ const List = ({ url }) => {
                   value={data.price}
                   type="tel"
                   name="price"
+                  min="1"
+                  max="999999"
                   placeholder="Rs.200"
                   required/>
               </div>
@@ -460,6 +462,8 @@ const List = ({ url }) => {
                     value={data.seats}
                     type="tel"
                     name="seats"
+                    min="1"
+                    max="999"
                     placeholder="4"
                     required/>
                 </div>
@@ -640,6 +644,8 @@ const List = ({ url }) => {
                   }
                   value={addData.price}
                   type="tel"
+                  min="1"
+                  max="999999"
                   placeholder="Rs.200"
                   required/>
               </div>
@@ -657,6 +663,8 @@ const List = ({ url }) => {
                     }
                     value={addData.seats}
                     type="tel"
+                    min="1"
+                    max="999"
                     placeholder="4"
                     required/>
                 </div>

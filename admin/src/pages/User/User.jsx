@@ -324,7 +324,7 @@ const UserPage = ({ url }) => {
                   value={data.name}
                   type="text"
                   name="name"
-                  placeholder="Type here"
+                  placeholder="Type Name"
                   required/>
               </div>
               {/* Phone */}
@@ -422,7 +422,7 @@ const UserPage = ({ url }) => {
                   onChange={(e) => setAddData({ ...addData, name: e.target.value })}
                   value={addData.name}
                   type="text"
-                  placeholder="Type here"
+                  placeholder="Type Name"
                   required/>
               </div>
               {/* Phone */}
