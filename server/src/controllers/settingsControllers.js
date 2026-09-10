@@ -1,4 +1,6 @@
 import settingsModel from '../models/settingsModels.js'
+import fs from 'fs';
+import path from 'path';
 
 const getSettings = async (req, res) => {
     try {
@@ -36,6 +38,10 @@ const addSetting = async (req, res) => {
         if (!['gender', 'category', 'location'].includes(type)) {
             return res.status(400).json({success: false,message: 'Invalid setting type'})
         }
+        // Check if image is required
+        if (type === 'category' && !req.file) {
+            return res.status(400).json({success: false,message: 'Category image is required'});
+        }
         // Check duplicate
         const exists = await settingsModel.findOne({
             type: type,
@@ -50,7 +56,10 @@ const addSetting = async (req, res) => {
         // Create setting
         const newSetting = new settingsModel({
             type: type,
-            name: name.trim()
+            name: name.trim(),
+            image: type === 'category' && req.file
+                ? req.file.filename
+                : ''
         })
         const setting = await newSetting.save()
         res.json({success: true,message: 'Setting added successfully',setting})
@@ -87,7 +96,20 @@ const updateSetting = async (req, res) => {
         if (exists) {
             return res.status(400).json({success: false,message: `${name.trim()} already exists`})
         }
-        setting.name = name.trim()
+        setting.name = name.trim();
+        if (setting.type === 'category' && req.file) {
+            // Delete old image
+            if (setting.image) {
+                const oldImagePath = path.join(
+                    'uploads',
+                    setting.image
+                );
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+            setting.image = req.file.filename;
+        }
         const updatedSetting = await setting.save()
         res.json({success: true,message: 'Setting updated successfully',setting: updatedSetting})
     } catch (error) {
@@ -103,6 +125,16 @@ const deleteSetting = async (req, res) => {
         const setting = await settingsModel.findById(settingId)
         if (!setting) {
             return res.status(404).json({success: false,message: 'Setting not found'})
+        }
+        // Delete category image
+        if (setting.type === 'category' && setting.image) {
+            const imagePath = path.join(
+                'uploads',
+                setting.image
+            );
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+            }
         }
         await settingsModel.findByIdAndDelete(settingId)
         res.json({success: true,message: 'Setting deleted successfully'})
